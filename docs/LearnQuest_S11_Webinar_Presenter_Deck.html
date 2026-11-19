@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quantifying the Cost of Inaction — Presenter Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1D2B4F;--deep:#131D36;--paper:#FBFAF7;--card:#fff;--accent:#B85C2C;
+--sage:#4F6E52;--sage-t:#EAF0E8;--warn:#A8422F;--gold:#8A6B25;--muted:#5B6478;
+--line:#E6E1D3;--tint:#F2EFE8;--ice:#C8CEDE;--amber:#E8A87C;
+--mono:'IBM Plex Mono',ui-monospace,monospace;--serif:'Fraunces',Georgia,serif;
+--sans:'Inter',-apple-system,'Segoe UI',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#0B1220;font-family:var(--sans)}
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#deck{position:relative;width:1280px;height:720px;transform-origin:center center;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.slide{position:absolute;inset:0;padding:64px 70px;display:none;flex-direction:column}
+.slide.on{display:flex}
+.slide.dark{background:var(--navy);color:#fff}
+.slide.light{background:var(--paper);color:var(--navy)}
+.chip{position:absolute;left:70px;top:56px;width:46px;height:46px;border-radius:11px;background:var(--accent);
+color:#fff;font-weight:700;font-size:19px;display:flex;align-items:center;justify-content:center}
+.eb{font-family:var(--mono);font-size:14px;letter-spacing:2.6px;text-transform:uppercase;font-weight:600;color:var(--accent)}
+.dark .eb{color:var(--amber)}
+.eb.top{margin-left:62px;padding-top:12px;margin-bottom:0}
+h1{font-family:var(--serif);font-weight:600;line-height:1.12}
+.k-title h1{font-size:60px;margin:18px 0 20px}
+.k-title .eb{margin-top:96px}
+.k-title .sub{font-size:22px;color:var(--ice);max-width:900px}
+.brandfoot{position:absolute;left:70px;bottom:56px;font-family:var(--mono);font-size:13px;
+letter-spacing:2.4px;text-transform:uppercase;color:var(--amber);font-weight:600}
+h1.mid{font-size:52px;margin-top:auto}
+.k-divider .sub,.k-question .sub{font-size:20px;color:var(--ice);margin-top:18px;margin-bottom:auto;max-width:880px}
+h1.huge{font-size:56px;margin:auto 0;max-width:1020px}
+h1.huge.long{font-size:46px;line-height:1.18}
+h1.q{font-size:44px;margin:auto 0 0;max-width:1030px}
+.k-question .sub{margin-top:22px;margin-bottom:auto}
+h2{font-family:var(--serif);font-size:38px;font-weight:600;margin:2px 0 0 62px;line-height:1.15}
+.cards{display:flex;flex-direction:column;gap:14px;margin-top:34px;flex:1;justify-content:flex-start}
+.card{background:var(--tint);border:1px solid var(--line);border-radius:12px;padding:20px 26px;font-size:23px;line-height:1.4}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:34px;flex:1}
+.col{border-radius:12px;padding:24px 26px}
+.col.a{background:var(--tint);border:1px solid var(--line)}
+.col.b{background:#fff;border:2px solid var(--sage)}
+.lab{font-family:var(--mono);font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:700;
+color:var(--muted);margin-bottom:16px}
+.col.b .lab{color:var(--sage)}
+.col p{font-size:21px;line-height:1.42;margin-bottom:14px}
+.eb.amber{color:#E8A87C}
+.k-prompt .chip{background:#E8A87C;color:#131D36}
+h2.ph{font-family:var(--serif);font-size:33px;font-weight:700;color:#fff;margin-top:12px;line-height:1.2}
+h2.ph.long{font-size:27px}
+.promptbox{background:var(--paper);border:2px solid #E8A87C;border-radius:14px;padding:26px 32px;margin-top:20px;
+flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.promptbox .pl{font-family:var(--mono);font-size:inherit;line-height:inherit;color:var(--navy);white-space:pre;flex:none}
+.promptbox .pl.sp{height:.62em;flex:none}
+.pfoot{font-size:19px;color:#C8CEDE;margin-top:16px;line-height:1.4}
+.qbox{background:#fff;border:2px solid var(--navy);border-radius:14px;padding:34px 40px;margin-top:30px;
+font-family:var(--serif);font-style:italic;font-size:30px;line-height:1.35;flex:1;display:flex;align-items:center}
+.attrib{font-family:var(--mono);font-size:13px;letter-spacing:2px;text-transform:uppercase;
+font-weight:700;color:var(--accent);margin-top:18px}
+.buildbox{background:#fff;border:1px solid var(--line);border-radius:14px;padding:44px 46px;margin-top:30px;
+display:grid;grid-template-columns:1fr 60px auto;align-items:center;gap:20px}
+.expr{font-size:28px;color:var(--muted);line-height:1.3}
+.arr{font-size:30px;color:var(--line);text-align:center}
+.res{font-family:var(--serif);font-size:46px;font-weight:700;color:var(--accent);white-space:nowrap;text-align:right}
+.note{font-size:21px;color:var(--muted);margin-top:26px;line-height:1.45}
+.k-build .buildbox{margin-top:auto}
+.k-build .note{margin-bottom:auto}
+.k-build .buildbox+.note{margin-bottom:auto}
+.k-answer .ansbox{flex:0 0 auto;margin-top:auto;margin-bottom:auto}
+.ansbox{background:var(--sage-t);border:1px solid #CFDCCB;border-radius:14px;padding:40px 46px;margin-top:26px;flex:1;
+display:flex;flex-direction:column;justify-content:center}
+.big{font-family:var(--serif);font-size:82px;font-weight:700;color:var(--navy);line-height:1}
+.ansbox .big.sm{font-size:52px}
+.asub{font-size:22px;color:#3B4A3C;margin-top:20px;line-height:1.4}
+ol.steps{list-style:none;counter-reset:s;margin-top:30px;flex:1}
+ol.steps li{counter-increment:s;position:relative;padding-left:58px;font-size:23px;line-height:1.35;margin-bottom:18px}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:-1px;width:38px;height:38px;border-radius:50%;
+background:var(--accent);color:#fff;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.pnote{background:var(--tint);border:1px solid var(--line);border-radius:12px;padding:18px 24px;
+font-size:19px;color:var(--muted);line-height:1.4}
+.pgfoot{position:absolute;right:70px;bottom:54px;font-family:var(--mono);font-size:13px;letter-spacing:1.6px;color:var(--muted)}
+.dark .pgfoot{color:#7A85A0}
+
+/* presenter bar */
+#bar{position:fixed;left:0;right:0;bottom:0;height:52px;background:var(--deep);color:#fff;display:flex;
+align-items:center;gap:20px;padding:0 20px;font-family:var(--mono);font-size:13px;z-index:40;border-top:2px solid var(--accent)}
+#bar .grp{display:flex;align-items:center;gap:9px}
+#bar b{color:var(--amber);font-weight:600;letter-spacing:1.4px;font-size:11px;text-transform:uppercase}
+#clock{font-size:19px;font-weight:700;letter-spacing:1px;min-width:74px}
+#pace{padding:5px 12px;border-radius:20px;background:rgba(255,255,255,.12);white-space:nowrap}
+#pace.ok{background:var(--sage)}#pace.behind{background:var(--warn)}#pace.ahead{background:var(--gold)}
+#segnow{color:var(--ice);max-width:330px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#bar .sp{margin-left:auto}
+button{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22);
+border-radius:7px;padding:6px 13px;cursor:pointer;letter-spacing:.6px}
+button:hover{background:rgba(255,255,255,.24)}
+button.go{background:var(--accent);border-color:var(--accent)}
+#prog{position:fixed;left:0;top:0;height:3px;background:var(--accent);width:0;z-index:50;transition:width .2s}
+
+/* notes panel */
+#notes{position:fixed;right:0;top:0;bottom:52px;width:430px;background:#fff;border-left:1px solid var(--line);
+padding:26px 28px;overflow-y:auto;display:none;z-index:35}
+#notes.on{display:block}
+body.notes #stage{right:430px}
+#notes .nh{font-family:var(--mono);font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:var(--accent);
+font-weight:700;margin-bottom:12px}
+#notes .nt{font-size:16px;line-height:1.62;color:#222933;white-space:pre-wrap}
+#notes .nnext{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);line-height:1.5}
+#help{position:fixed;inset:0;background:rgba(11,18,32,.94);color:#fff;z-index:60;display:none;
+align-items:center;justify-content:center}
+#help.on{display:flex}
+#help .box{max-width:560px;font-size:15px;line-height:1.7}
+#help h3{font-family:var(--serif);font-size:28px;margin-bottom:18px}
+#help kbd{font-family:var(--mono);background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+border-radius:5px;padding:2px 8px;font-size:13px}
+@media print{#bar,#notes,#prog,#help{display:none}html,body{overflow:visible;background:#fff}
+ #stage{position:static}#deck{transform:none!important;box-shadow:none;width:100%;height:auto}
+ .slide{display:flex!important;position:relative;page-break-after:always;height:720px}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="stage"><div id="deck">
+<section class="slide dark k-title" data-i="0" data-seg="0" data-t="45">
+    <div class="eb">AIWE-S-11W &nbsp;·&nbsp; 60-minute webinar · Value-Based Selling</div>
+      <h1>Quantifying the Cost of Inaction</h1><p class="sub">A number you could defend in front of their CFO</p>
+      <div class="brandfoot">LearnQuest · AI Workforce Enablement</div>
+  </section>
+<section class="slide dark k-statement" data-i="1" data-seg="0" data-t="75">
+    <div class="chip">0</div><h1 class="huge long">You are not losing to a competitor. You are losing to nothing.</h1><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 2 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="2" data-seg="0" data-t="105">
+    <div class="chip">0</div><h2>Every input is one of four things</h2><div class="cards"><div class="card">Stated — they said it, on a nameable date.</div><div class="card">Published — anyone can go and look it up.</div><div class="card">Benchmarked — external, source named as you use it.</div><div class="card">Assumed and agreed — accepted first, labelled always.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 3 / 41</div>
+  </section>
+<section class="slide dark k-statement" data-i="3" data-seg="0" data-t="75">
+    <div class="chip">0</div><h1 class="huge long">No fifth category. If it doesn't fit, it isn't sourced.</h1><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 4 / 41</div>
+  </section>
+<section class="slide dark k-divider" data-i="4" data-seg="1" data-t="40">
+    <div class="chip">1</div><div class="eb top">Segment 1 · 5–13 min</div><h1 class="mid">Why cost-of-inaction figures fail</h1>
+      <p class="sub">Three named failure modes, before anyone asks you to change anything.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 5 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="5" data-seg="1" data-t="105">
+    <div class="chip">1</div><h2>1 · The invented input</h2><div class="cards"><div class="card">The model has a slot. The tool fills it.</div><div class="card">By draft two, nobody remembers it was unsourced.</div><div class="card">Tell: you can't name the source in five seconds.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 6 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="6" data-seg="1" data-t="115">
+    <div class="chip">1</div><h2>2 · The uncredited assumption</h2><div class="cards"><div class="card">Sound reasoning, right arithmetic, one unagreed judgement.</div><div class="card">Fails at the finance review, not before.</div><div class="card">Tell: “we assume”, and nobody outside has seen it.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 7 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="7" data-seg="1" data-t="105">
+    <div class="chip">1</div><h2>3 · The implausible total</h2><div class="cards"><div class="card">Every input sourced. Arithmetic correct. Answer unbelievable.</div><div class="card">They don't audit it. They stop trusting you.</div><div class="card">Tell: never checked against anything they already know.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 8 / 41</div>
+  </section>
+<section class="slide dark k-question" data-i="8" data-seg="1" data-t="115">
+    <div class="chip">1</div><div class="eb top">Over to you</div><h1 class="q">Which of the three have you watched happen?</h1>
+      <p class="sub">One, two or three in the chat.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 9 / 41</div>
+  </section>
+<section class="slide dark k-divider" data-i="9" data-seg="2" data-t="30">
+    <div class="chip">2</div><div class="eb top">Segment 2 · 13–17 min</div><h1 class="mid">The four-part model</h1>
+      <p class="sub">Four boxes. You'll fill them in for a real deal in twenty minutes.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 10 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="10" data-seg="2" data-t="50">
+    <div class="chip">2</div><h2>1 · The leak</h2><div class="cards"><div class="card">What does the problem cost per period, today?</div><div class="card">Volume × effort × loaded cost.</div><div class="card">Keep the period small. Weekly sources easily.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 11 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="11" data-seg="2" data-t="50">
+    <div class="chip">2</div><h2>2 · The recoverable share</h2><div class="cards"><div class="card">How much of the leak actually goes away?</div><div class="card">Never all of it.</div><div class="card">Almost always an assumption. Agree it out loud.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 12 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="12" data-seg="2" data-t="45">
+    <div class="chip">2</div><h2>3 · The delay</h2><div class="cards"><div class="card">How long until a decision realistically lands?</div><div class="card">Ask them. Do not guess.</div><div class="card">Longer than your champion first says.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 13 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="13" data-seg="2" data-t="65">
+    <div class="chip">2</div><h2>4 · The dated event</h2><div class="cards"><div class="card">Is there a date inside that window?</div><div class="card">Renewal, escalator, audit, a migration window closing.</div><div class="card">A number argues. A date decides.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 14 / 41</div>
+  </section>
+<section class="slide dark k-divider" data-i="14" data-seg="3" data-t="35">
+    <div class="chip">3</div><div class="eb top">Segment 3 · 17–32 min</div><h1 class="mid">Worked example — Meridian Logistics</h1>
+      <p class="sub">Notes in, model out, then thirteen minutes of checking.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 15 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="15" data-seg="3" data-t="55">
+    <div class="chip">3</div><h2>Meridian Logistics</h2><div class="cards"><div class="card">340 employees, just closed a $40M Series C.</div><div class="card">Twelve ops coordinators, handling exceptions by hand.</div><div class="card">Legacy ERP. Support contract auto-renews 1 March.</div><div class="card">Two calls: 14 and 21 August.</div><div class="card">Everything I have is in a CRM field.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 16 / 41</div>
+  </section>
+<section class="slide dark k-prompt" data-i="16" data-seg="3" data-t="65">
+    <div class="chip">3</div><div class="eb top amber">Step one · what goes in</div><h2 class="ph ">The notes, exactly as they sit in the CRM.</h2>
+      <div class="promptbox" style="font-size:24.0px;line-height:1.52"><div class="pl">14 Aug — VP Ops (Dana R.), discovery</div><div class="pl">~600 order exceptions/wk, all by hand</div><div class="pl">12 ops coordinators. legacy ERP, G2 says clunky</div><div class="pl">she posted publicly re: "scaling problems"</div><div class="pl">procurement here runs ~5 months — she volunteered</div><div class="pl sp"></div><div class="pl">21 Aug — ops mgr follow up</div><div class="pl">14 min avg per exception (he timed it)</div><div class="pl">60% recoverable? I put that to Dana, accepted</div><div class="pl">ops headcount +15% this yr</div><div class="pl">ERP support auto-renews 1 Mar, 9% escalator</div><div class="pl"> (they sent us the contract)</div></div>
+      <div class="pfoot">Unedited. Two calls, in the order I typed them, no structure at all.</div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 17 / 41</div>
+  </section>
+<section class="slide dark k-prompt" data-i="17" data-seg="3" data-t="80">
+    <div class="chip">3</div><div class="eb top amber">Step two · what I ask for</div><h2 class="ph ">The prompt. The second paragraph is what stops it inventing.</h2>
+      <div class="promptbox" style="font-size:22.6px;line-height:1.52"><div class="pl">From these notes, build a cost-of-inaction model with</div><div class="pl">four parts: the recurring leak, the recoverable share,</div><div class="pl">the realistic decision window, and any dated event</div><div class="pl">that falls inside it.</div><div class="pl sp"></div><div class="pl">For every input, quote the sentence in my notes it</div><div class="pl">came from. If there is no sentence, leave it blank</div><div class="pl">and say so.</div><div class="pl sp"></div><div class="pl">Do the arithmetic and show every line.</div><div class="pl sp"></div><div class="pl">Then express the recoverable annual figure as a</div><div class="pl">percentage of what that team costs in total, and tell</div><div class="pl">me if the answer looks implausible.</div></div>
+      <div class="pfoot">Page four of your workbook. You will run this on your own notes in about fifteen minutes.</div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 18 / 41</div>
+  </section>
+<section class="slide light k-two" data-i="18" data-seg="3" data-t="90">
+    <div class="chip">3</div><h2>About a minute later</h2><div class="two">
+      <div class="col a"><div class="lab">What it filled in</div><p>Leak — 600 × 14 min × $38 = $5,320 a week</p><p>Recoverable — 60%, $165,984 a year</p><p>Window — 5 months, her own procurement cycle</p><p>Dated event — 1 March, 9% escalator</p></div>
+      <div class="col b"><div class="lab">What it flagged, or left blank</div><p>$38/hr — used it, said plainly: not from your notes</p><p>60% — quoted, but the quote is you asking, not her answering</p><p>Plausibility: 17.5% of team cost. “Not implausible.”</p><p>It compounded the 15% headcount growth in. You will take that out.</p></div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 19 / 41</div>
+  </section>
+<section class="slide light k-build" data-i="19" data-seg="3" data-t="45">
+    <div class="chip">3</div><div class="eb top">The leak, in hours</div>
+      <div class="buildbox"><div class="expr">600 exceptions × 14 minutes</div><div class="arr">→</div>
+      <div class="res">140 hours a week</div></div>
+      <p class="note">Stated. Volume on the 14th, handling time on the 21st. Both quoted back.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 20 / 41</div>
+  </section>
+<section class="slide light k-build" data-i="20" data-seg="3" data-t="45">
+    <div class="chip">3</div><div class="eb top">The leak, in money</div>
+      <div class="buildbox"><div class="expr">140 hours × $38</div><div class="arr">→</div>
+      <div class="res">$5,320 a week</div></div>
+      <p class="note">It reached for $38 and told you it had. Twenty seconds to make it real.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 21 / 41</div>
+  </section>
+<section class="slide light k-build" data-i="21" data-seg="3" data-t="45">
+    <div class="chip">3</div><div class="eb top">Annualised</div>
+      <div class="buildbox"><div class="expr">$5,320 × 52 weeks</div><div class="arr">→</div>
+      <div class="res">$276,640 a year</div></div>
+      <p class="note">Gross. Not yet the cost of inaction.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 22 / 41</div>
+  </section>
+<section class="slide light k-build" data-i="22" data-seg="3" data-t="55">
+    <div class="chip">3</div><div class="eb top">The recoverable share</div>
+      <div class="buildbox"><div class="expr">$276,640 × 60%</div><div class="arr">→</div>
+      <div class="res">$165,984 a year</div></div>
+      <p class="note">Assumed and agreed. The sentence it quoted was yours, not hers.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 23 / 41</div>
+  </section>
+<section class="slide light k-build" data-i="23" data-seg="3" data-t="40">
+    <div class="chip">3</div><div class="eb top">Monthly rate of loss</div>
+      <div class="buildbox"><div class="expr">$165,984 ÷ 12</div><div class="arr">→</div>
+      <div class="res">$13,832 a month</div></div>
+      <p class="note">Derived. The rate the clock runs at.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 24 / 41</div>
+  </section>
+<section class="slide light k-build" data-i="24" data-seg="3" data-t="55">
+    <div class="chip">3</div><div class="eb top">The cost of the delay</div>
+      <div class="buildbox"><div class="expr">$13,832 × 5 months</div><div class="arr">→</div>
+      <div class="res">$69,160</div></div>
+      <p class="note">Stated. Her own procurement cycle, volunteered. Not your forecast date.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 25 / 41</div>
+  </section>
+<section class="slide light k-answer" data-i="25" data-seg="3" data-t="95">
+    <div class="chip">3</div><div class="eb top">The cost of inaction over their own decision window</div>
+      <div class="ansbox"><div class="big">$69,160</div><div class="asub">Five months at $13,832 a month. Five inputs, five sources.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 26 / 41</div>
+  </section>
+<section class="slide dark k-statement" data-i="26" data-seg="3" data-t="70">
+    <div class="chip">3</div><h1 class="huge long">1 March. The contract locks for twelve months at 9% more.</h1><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 27 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="27" data-seg="3" data-t="125">
+    <div class="chip">3</div><h2>Now check it against something they already know</h2><div class="cards"><div class="card">Twelve coordinators at $38 loaded ≈ $948,480 a year.</div><div class="card">$165,984 recoverable is 17.5% of that.</div><div class="card">The tool did that division. It said "not implausible".</div><div class="card">You say it out loud: "about a sixth of one team’s effort."</div><div class="card">And you take the 15% headcount growth back out.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 28 / 41</div>
+  </section>
+<section class="slide dark k-divider" data-i="28" data-seg="4" data-t="40">
+    <div class="chip">4</div><div class="eb top">Segment 4 · 32–38 min</div><h1 class="mid">Spot the flaw</h1>
+      <p class="sub">The same case, produced in four minutes on a Thursday.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 29 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="29" data-seg="4" data-t="130">
+    <div class="chip">4</div><h2>Cost of inaction: $473,200 per year</h2><div class="cards"><div class="card">750 exceptions × 14 min = 175 hrs/week</div><div class="card">175 hours × $52 = $9,100 a week</div><div class="card">× 52 weeks = $473,200 a year</div><div class="card">Presented as the cost of inaction.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 30 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="30" data-seg="4" data-t="130">
+    <div class="chip">4</div><h2>Four things wrong with it</h2><div class="cards"><div class="card">1 · Volume unsourced — they said 600.</div><div class="card">2 · $52 unsourced — the benchmark says $38.</div><div class="card">3 · Reports spend, not recoverable value.</div><div class="card">4 · 49.9% of the team's entire cost.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 31 / 41</div>
+  </section>
+<section class="slide dark k-statement" data-i="31" data-seg="4" data-t="60">
+    <div class="chip">4</div><h1 class="huge long">6.8× bigger. Worth nothing. It dies at the first question.</h1><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 32 / 41</div>
+  </section>
+<section class="slide dark k-divider" data-i="32" data-seg="5" data-t="35">
+    <div class="chip">5</div><div class="eb top">Segment 5 · 38–52 min</div><h1 class="mid">Guided practice — your own opportunity</h1>
+      <p class="sub">Your notes, the prompt, then the checking.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 33 / 41</div>
+  </section>
+<section class="slide dark k-prompt" data-i="33" data-seg="5" data-t="50">
+    <div class="chip">5</div><div class="eb top amber">On screen for the whole exercise</div><h2 class="ph ">The prompt. Page four of the workbook.</h2>
+      <div class="promptbox" style="font-size:22.6px;line-height:1.52"><div class="pl">From these notes, build a cost-of-inaction model with</div><div class="pl">four parts: the recurring leak, the recoverable share,</div><div class="pl">the realistic decision window, and any dated event</div><div class="pl">that falls inside it.</div><div class="pl sp"></div><div class="pl">For every input, quote the sentence in my notes it</div><div class="pl">came from. If there is no sentence, leave it blank</div><div class="pl">and say so.</div><div class="pl sp"></div><div class="pl">Do the arithmetic and show every line.</div><div class="pl sp"></div><div class="pl">Then express the recoverable annual figure as a</div><div class="pl">percentage of what that team costs in total, and tell</div><div class="pl">me if the answer looks implausible.</div></div>
+      <div class="pfoot">Staying up for the full fourteen minutes. Do not tidy your notes first.</div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 34 / 41</div>
+  </section>
+<section class="slide light k-practice" data-i="34" data-seg="5" data-t="655">
+    <div class="chip">5</div><h2>Build your figure</h2><ol class="steps"><li>Two minutes: pick one live deal that has gone quiet. Paste your notes raw.</li><li>One minute: run the prompt. Do not edit the notes first.</li><li>Seven minutes: source every input it filled. Check each quoted sentence.</li><li>Two minutes: any quote that turns out to be you talking is Assumed, not Stated.</li><li>Two minutes: say the plausibility fraction out loud. Do you flinch?</li></ol>
+      <div class="pnote">Write down every slot it left blank. That list is your next call, and it is the second deliverable of this hour.</div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 35 / 41</div>
+  </section>
+<section class="slide light k-practice" data-i="35" data-seg="5" data-t="100">
+    <div class="chip">5</div><h2>Stuck?</h2><ol class="steps"><li>Model looks complete? Read the flags before the boxes.</li><li>Quote turns out to be you talking? Assumed, not Stated.</li><li>No hourly rate in your notes? It guessed one. Go and get the real one.</li><li>No dated event? Check the contract they already sent you.</li></ol>
+      <div class="pnote">Two-minute warning at minute ten.</div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 36 / 41</div>
+  </section>
+<section class="slide dark k-divider" data-i="36" data-seg="6" data-t="40">
+    <div class="chip">6</div><div class="eb top">Segment 6 · 52–58 min</div><h1 class="mid">Debrief</h1>
+      <p class="sub">Two figures, pressure-tested out loud.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 37 / 41</div>
+  </section>
+<section class="slide dark k-question" data-i="37" data-seg="6" data-t="190">
+    <div class="chip">6</div><div class="eb top">Over to you</div><h1 class="q">Your number, and where all four inputs came from.</h1>
+      <p class="sub">Two volunteers, unmuted.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 38 / 41</div>
+  </section>
+<section class="slide dark k-question" data-i="38" data-seg="6" data-t="130">
+    <div class="chip">6</div><div class="eb top">Over to you</div><h1 class="q">Which input would you least like their CFO to ask about?</h1>
+      <p class="sub">That's the one to go and source this week.</p><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 39 / 41</div>
+  </section>
+<section class="slide light k-list" data-i="39" data-seg="7" data-t="75">
+    <div class="chip">7</div><h2>This week</h2><div class="cards"><div class="card">Take the figure into your next conversation on that deal.</div><div class="card">Say the source of each input out loud.</div><div class="card">Fill one flagged blank by asking the question.</div></div><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 40 / 41</div>
+  </section>
+<section class="slide dark k-statement" data-i="40" data-seg="7" data-t="45">
+    <div class="chip">7</div><h1 class="huge long">A cost-of-inaction figure ages badly. Use it this week.</h1><div class="pgfoot">AIWE-S-11W &nbsp;·&nbsp; 41 / 41</div>
+  </section>
+</div></div>
+
+<div id="notes">
+  <div class="nh">Say this</div>
+  <div class="nt" id="ntext"></div>
+  <div class="nnext" id="nnext"></div>
+</div>
+
+<div id="bar">
+  <div class="grp"><b>Elapsed</b><span id="clock">00:00</span></div>
+  <div class="grp"><span id="pace">Not started</span></div>
+  <div class="grp"><b>Now</b><span id="segnow">—</span></div>
+  <div class="sp"></div>
+  <div class="grp">
+    <button class="go" id="bstart">Start</button>
+    <button id="breset">Reset</button>
+    <button id="bnotes">Notes (N)</button>
+    <button id="bhelp">?</button>
+    <span id="pos">1 / 41</span>
+  </div>
+</div>
+
+<div id="help"><div class="box">
+  <h3>Running this deck</h3>
+  <p><kbd>→</kbd> <kbd>Space</kbd> next &nbsp; <kbd>←</kbd> back &nbsp; <kbd>N</kbd> presenter notes &nbsp;
+  <kbd>S</kbd> start or pause the clock &nbsp; <kbd>F</kbd> full screen &nbsp; <kbd>?</kbd> this panel &nbsp; <kbd>Esc</kbd> close</p>
+  <p style="margin-top:18px">The pace badge compares elapsed time against where the run-of-show says you should be.
+  Green is within two minutes. Amber means you are ahead and can slow down; red means you are behind and should
+  take it out of the debrief, not the practice.</p>
+  <p style="margin-top:18px">Nothing is saved. Print from the browser for a paper copy of the slides.</p>
+</div></div>
+
+<script>
+(function(){
+  "use strict";
+  var NOTES=["Welcome. This is session eleven, and it's the one with the most damage in it. By the end of the hour you'll have a cost-of-inaction figure for one of your own live deals. [pause] Not a template, not a worked example you copy across. A number for a real opportunity, with a named source behind every input. [pause] You'll build it the way you'll actually build it on a Tuesday: paste your discovery notes into a tool, have it assemble the model and do the arithmetic in about a minute, and then spend the rest of the hour on the part that decides whether the number survives — sourcing every input, and dealing honestly with the slots it couldn't fill. [pause] The test isn't whether it's impressive. The test is whether you could sit in front of their CFO and defend every line of it. [chat prompt while people are still joining] While the room fills up — in one word, what does your most stalled deal need to move?","Here's the honest version. Go and look at your closed-lost pile. Most of those deals didn't go to a competitor. They went nowhere. The customer thought about it, agreed it was a problem, and then did the thing they were always going to do, which is nothing. [pause] Nothing is a very strong competitor. It has no implementation risk, no procurement, no internal politics and no price. You cannot out-feature it. [pause] The only thing that beats it is a price on the status quo. What does it cost them to carry on exactly as they are? That figure is the cost of inaction, and it is the most dangerous number in your deal — because it is the one number everybody in the room, including you, wants to be big. [pause] Which is where the trouble starts.","One rule, and we'll refer back to it all hour. Every input in your figure is one of four things. [pause] Stated. The customer said it, in a meeting you can name, on a date you can name. “About six hundred exceptions a week” — VP Operations, discovery call, fourteenth of August. That's stated. [pause] Published. It exists in a document anyone can look up. Annual report, press release, job posting, public pricing, their own website. Headcount off their careers page is published. [pause] Benchmarked. An external figure you can produce on request, with the source named at the time you use it — not later, not if asked. Fully loaded coordinator cost from published salary data plus a stated loading rate. [pause] And assumed and agreed. A judgement the customer has explicitly accepted before it appears in any document, labelled as an assumption, in writing, every single time it's shown. “We're assuming sixty per cent of that handling time is recoverable — is that fair?” [pause] Four categories. Stated, published, benchmarked, assumed and agreed. [pause] There is no fifth. [pause] Look at the last figure you sent a customer and decide which box it goes in. If it takes you longer than five seconds, you already know the answer.","So that's the rule, and I'll be tedious about it. If an input doesn't fit one of those four boxes, it isn't sourced. It's a wish with a dollar sign in front of it. [pause] Now, the tool, because we're going to use one in about twelve minutes. AI is genuinely good at this work. Building the four-part model out of scattered notes and carrying the arithmetic across it is exactly the sort of job it doesn't make slips in, and building it by hand is about an hour — which is precisely why the number usually gets guessed in a meeting instead. [pause] But left to itself it will fill any empty slot with something plausible, and it will not tell you which one it invented, because it doesn't know either. [pause] That's not a fault you can prompt your way out of. It is, however, a fault you can prompt it to declare. Ask it to quote the sentence behind every input and to leave a slot blank when there isn't one, and it will — and it has no incentive to do otherwise, which is more than can be said for a rep at half past four with a forecast call in the morning. [pause] So: the tool does the arithmetic and tells you where the holes are. You do the sourcing. [pause] And be clear about what's at stake. This is the highest-risk thing in the value-selling set. An inflated cost-of-inaction figure is the fastest way to lose a CFO permanently. Not for this deal. For all of them.","Three failure modes, roughly two and a half minutes each. [pause] I'd like you to recognise your own habits in at least one of them, and I'd rather that happened here than in somebody's finance review. [pause] Name first, then the tell — the thing you can actually go and look for in a document you've already sent. [pause] None of these come from stupidity. They're what happens when a model that formats well meets a rep who has to produce something by Thursday.","Number one. The invented input. [pause] The model has a slot in it. The slot wants a number. The tool fills it with something plausible, because that is what it does, and it does it in a confident sentence with two decimal places on it. [pause] You read it, it looks about right, you move on. Second draft, it's still there. Third draft, it's in a table with a heading over it. By the time it reaches a document with your logo on it, nobody remembers it was never sourced — including you. [pause] And it survives. It survives the internal review, it survives the champion, it survives the deck. It survives right up until somebody in finance asks where the number came from. That is the only moment it fails, and by then it's in writing with your name on it. [pause] The tell is a stopwatch. Point at any figure in your own document and try to name the meeting, the document or the benchmark. Out loud. If it takes you more than five seconds, you don't have a source. You have a memory of feeling reasonably confident about it. [pause] Five seconds. That's the whole test. Try it on something you sent last week.","Number two, and this is the one that does the most damage. The uncredited assumption. [pause] The reasoning is sound. The arithmetic is right. Every figure in the chain has a source except one, and that one is a judgement the customer has never agreed to. Usually it's the recoverable share. Sometimes it's how long a decision takes. It's the soft number in the middle that the whole answer hangs off. [pause] This is worse than the invented input, and I want to be precise about why. The invented input fails when somebody checks it. This one fails at the finance review — which is after your champion has taken it into a room you weren't in, put their name on it, and spent their own credibility defending it. [pause] So it doesn't just cost you the number. It costs you the person. They'll be more careful with you afterwards, and quite reasonably so. [pause] The tell: read your chain and find any step that begins “we assume”. Then ask whether anybody outside your own company has ever seen that step. Not been sent it. Seen it, and said yes. [pause] If they haven't, you've got one job before that document goes anywhere. Put the assumption to them out loud, in those words. “We're assuming sixty per cent is recoverable — is that fair?” [pause] Ten seconds of mild awkwardness now, or a dead deal in six weeks.","Number three. The implausible total. [pause] This is the strange one, because nothing is wrong with it. Every input is sourced. The arithmetic is correct. You could show your working to anybody. And the answer is still unbelievable — larger than the department's budget, or larger than the margin on the business it describes. [pause] Here's what actually happens when a CFO sees a figure like that. They don't audit it. They don't come back with questions. They don't ask you to justify line four. They quietly stop believing the rest of the case, and you never find out that's what happened. You get a polite email about timing. [pause] Because a number that size doesn't read as a big opportunity. It reads as somebody who doesn't understand their business. [pause] The tell: you have never checked the total against anything the customer already knows about themselves. Their team cost. Their department budget. Their revenue. Anything at all. [pause] One sentence of arithmetic saves you here, and we'll do it live later. Take your answer, put it next to something of theirs, and say what fraction of it you're claiming. If you can't say that sentence comfortably out loud, the number's wrong. [pause] And you won't get a second look at it.","Poll. One, two or three — which of those have you seen happen? To you, to a colleague, or to something you were handed and had to send on. [pause] Not the worst thing you've ever done. Just the one you recognise. [take answers in chat before revealing] [pause, read the split out loud] [pause] Number two usually wins, and it's worth saying that out loud, because it relaxes the room. Everybody thinks they're the only one carrying an unagreed sixty per cent around in a spreadsheet. Nobody is. [pause] If you've seen all three, put a three in the chat twice and we'll say no more about it. [pause] And notice what all three have in common. They're faster than doing it properly. The tool makes every one of them easier and quicker than it has ever been, which is exactly why the discipline has to be said out loud rather than assumed. [pause] Right. The structure.","Four boxes. Under a minute each, then we build one for real. [share the workbook link in chat now, not later] The workbook's going into chat now — open it before the practice starts, not after. [pause] These four are what you'll ask the tool for, in these words, so it's worth knowing them properly rather than trusting the prompt to carry you. If you can't say what belongs in a box, you can't tell whether what came back belongs in it. [pause] And if you can't fill one of these boxes from a real source, that isn't a gap in the model. It's a gap in your discovery, and it's much better to find it here than in front of their CFO.","Box one. The leak. What does the problem cost them per period, today? [pause] Volume times effort times loaded cost. How many of the thing, how long each one takes, and what an hour of that person actually costs — loaded, not salary. [pause] One piece of advice. Keep the period small. Weekly is far easier to source than annual, because people can tell you what a normal week looks like. Ask somebody for an annual figure and they'll estimate. Ask them what happens in a week and they'll just tell you.","Box two. The recoverable share. How much of that leak would actually go away? [pause] Never all of it. Some of those exceptions genuinely need a human, and if your figure implies otherwise, nobody in operations will believe a word of it. [pause] This one is almost always an assumption, which makes it the number to agree out loud before it appears anywhere in writing. Say it as a question. “We're assuming about sixty per cent — is that fair?” [pause] Then it's theirs, not yours. That's the entire difference.","Box three. The delay. How long until a decision realistically lands? [pause] Ask them. Do not guess, and do not use your forecast date, because your forecast date is a wish with a quarter attached to it. Their procurement cycle is a stated input, and it is almost always longer than the champion first says. [pause] Ask it plainly. From a yes in this room, how long until a signature? The answer is often three months longer than the thing you'd written down.","Box four, and this is the one people skip. The dated event. Is there a date inside that window that changes the cost? [pause] A renewal. An escalator. An audit. A contract that auto-renews if nobody touches it. A migration window that closes. Something that happens on a specific day whether or not anybody makes a decision. [pause] Go and find it. It'll be in a contract they've already shared with you, or in something they said in passing that you didn't write down. [pause] Because here's the thing about the first three boxes. They produce a number, and a number is an argument. Arguments can be had again next quarter. [pause] A date can't. A number argues. A date decides. [pause] Right. Let's build one.","Fifteen minutes, and we build one figure end to end. Meridian Logistics. [pause] I'm not going to narrate this one from a slide. You'll see the notes going in, exactly as they sit in my CRM, you'll see the prompt, and you'll see what comes back — including the bits it refused to fill in. [pause] Then we spend most of the segment on the only part that's actually skilled, which is going through it line by line and naming the source out loud for every input. It will get repetitive. That's deliberate. The narration is the teaching.","Meridian Logistics, and I'm not going to embellish it. Three hundred and forty employees, a forty-million-dollar Series C just closed, so there's money and there's pressure to spend it visibly well. Twelve ops coordinators handling order exceptions by hand. Legacy ERP, support contract renewing in March. [pause] Two conversations, the fourteenth and the twenty-first of August. [pause] And here's the state I want you to recognise, because it's yours. There is no document. Nobody wrote this up. Everything I have is sitting in a CRM field in the order it happened to occur to me, and that is the normal condition of a live deal — which is exactly why most deals never get a cost-of-inaction figure at all. An hour of modelling you haven't got is how the number ends up being guessed in a meeting.","Here's what goes in. That's the lot. [pause] Eleven lines, two conversations, no structure, written in the order things occurred to me. There is a public LinkedIn post in there next to a G2 review next to a contract clause, and nothing is grouped by anything. [pause] I have deliberately not tidied it up. Tidying your notes before you paste them is the most common way people waste the time this is meant to save — twenty minutes of formatting for a reader that doesn't care. Paste the mess. [pause] Now look at what's actually in there, because it decides everything that follows. There's a volume and a handling time from two different calls. There's a procurement window she volunteered, which is worth a great deal more than my forecast date. There's a percentage I proposed and she accepted, which is a real thing but not the same as her saying it. There's a renewal date with an escalator on it. [pause] And there is no hourly rate anywhere. Nobody told me what an ops coordinator costs. Hold that.","And here's the ask. It's in your workbook, page four, and you'll run it yourself before the hour's out. [pause] First paragraph: the four boxes, in the words we just spent four minutes on. Third: do the arithmetic and show every line. Both mechanical, both an hour of my life I'd rather have back. [pause] Fourth paragraph is the plausibility check, and I'll come back to it at the end of the segment, because it's the one nobody thinks to ask for and it catches failure mode three on its own. [pause] But the second paragraph is the one that changes what you get. Quote the sentence in my notes it came from. If there is no sentence, leave it blank and say so. [pause] Without that, you get four full boxes and a confident-looking number, and no way of telling by reading which inputs were the customer's and which were assembled out of the general shape of things — because it writes them in exactly the same voice. [pause] With it, sourcing stops being reconstruction and becomes checking. And more to the point, it produces a list of what it couldn't source. You will not produce that list yourself. You were on both calls, you remember them, and memory closes gaps silently.","About a minute. Left is what it filled in, right is what it flagged or wouldn't fill. [pause] Left, quickly, because this is the part you'd have got to yourself given an hour. The leak. The recoverable share. The window — five months, and note it used hers, not my forecast date, because hers was the one in the notes. And the dated event: it found the first of March in a line about a support contract and understood that it lands inside the window. That last one is a nice piece of work and it's the sort of thing that falls out of asking for it explicitly. [pause] Now the right-hand side, which is the reason we're doing it this way. [pause] The thirty-eight dollars: it used a plausible metro rate to finish the leak, and then it told me it had. There is no thirty-eight dollars in my notes and it said so in a sentence. [pause] The sixty per cent — this is the sharpest thing on the slide. It quoted a sentence. Read the sentence. “I put that to Dana, accepted.” That's me proposing a number and a customer agreeing to it, which is a real category, and it is not her telling me sixty per cent. The tool didn't judge that. It just showed me my own words, and once you've seen that written down you cannot un-see what you've got. [pause] The plausibility line: seventeen and a half per cent of what that team costs. Calculated, unasked-for by me except in the fourth paragraph, and it came back with “not implausible”. We'll deal with that at the end, because its opinion there is worth almost nothing and the arithmetic is worth a lot. [pause] And the last one, which is the one you'd have missed. It compounded the fifteen per cent headcount growth into the window, because the growth was in my notes and it was told to use my notes. It's a legitimate reading. It makes the number bigger. And we're going to take it out. [pause] Right. Line by line, source out loud each time.","Line one. Six hundred exceptions a week at fourteen minutes each. Eight thousand four hundred minutes — a hundred and forty hours a week. [pause] I'm checking, not calculating, and the check isn't the multiplication. It's the two quoted sentences that came back attached to it. Six hundred from Dana on the fourteenth, fourteen minutes from the ops manager on the twenty-first, and he'd timed it rather than guessed. Both Stated, both with a date I can produce. [pause] One thing the tool won't do unless you ask: say it as people rather than minutes. A hundred and forty hours across twelve coordinators is about three and a half full-time people doing nothing but chasing exceptions. Nobody feels eight thousand four hundred minutes. Everybody feels three and a half people. [pause] Number and source, in the same breath, every time.","A hundred and forty hours at thirty-eight dollars fully loaded. Five thousand three hundred and twenty a week. [pause] This is the flagged line. There is no hourly rate in my notes — I said so when the notes went up. The tool needed one to finish the box, took a plausible metro figure, and then declared it, because it was told to declare anything it couldn't quote. [pause] So my job is twenty seconds long. Go to the published salary data, apply our twenty-eight per cent loading, and either thirty-eight stands or it doesn't. Now it's Benchmarked and both documents are sendable today. [pause] Notice the tool did not save me from the error. It told me where the error would be. Those are very different things, and only the second one is on offer. [pause] And when the figure appears in front of a customer I say it out loud at that moment. Not in a footnote, not if asked. “Thirty-eight fully loaded, benchmarked, I'll send you both sources.” Four seconds, and it's the difference between a figure and a claim.","Times fifty-two. Two hundred and seventy-six thousand six hundred and forty a year. [pause] Stop here, because this is where most cost-of-inaction figures end and this is not the cost of inaction. It's the gross cost of handling exceptions — what they spend on the problem today whether they buy anything or not. Put that on a slide and call it cost of inaction and you've made failure mode two: quietly claimed all of it comes back, and nobody agreed to that. [pause] It's also derived. No source of its own, arithmetic sitting on a benchmarked rate, so it's wrong by exactly the proportion the rate is wrong. Which is why the twenty seconds on the previous line mattered.","Sixty per cent recoverable. A hundred and sixty-five thousand nine hundred and eighty-four a year. [pause] Softest number in the model, most important to get right, and the one where the quoted sentence does the most work. It looks sourced, because there is a sentence against it. Read the sentence. “Sixty per cent recoverable? I put that to Dana, accepted.” [pause] That's me proposing and her agreeing. It's Assumed and agreed — a real category, the fourth one, and genuinely not nothing. It is a long way from her volunteering sixty per cent, and by next Tuesday I would have remembered it as hers if I hadn't been looking at my own words on the screen. [pause] So it's labelled as an assumption every single time it appears. Including here, in front of you. The moment you stop labelling it, it starts behaving like a fact, and then somebody in finance asks where sixty per cent came from and your champion has nothing to say. [pause] Forty per cent of that handling time stays. Saying so is what makes the other sixty believable.","Divide by twelve. Thirteen thousand eight hundred and thirty-two a month. [pause] This is the number I want in the customer's head, because it's the rate the clock runs at. Every month this decision doesn't get made costs them about thirteen and a half thousand dollars of recoverable value. [pause] Annual figures let people file the problem under “this year”, which is where things go to be forgotten. A monthly rate makes the delay itself the expensive thing, and that is the honest description of what's actually happening. [pause] One more step, and it's the one that turns arithmetic into a conversation.","Five months, times thirteen thousand eight hundred and thirty-two. Sixty-nine thousand one hundred and sixty dollars. [pause] The five months is hers. She described her own procurement cycle, unprompted, and the tool picked it out of the notes and used it as the window — which is what it was asked to do, and which is more discipline than I'd have shown, because my forecast says three months and three months would have made my number smaller. [pause] That's worth sitting with for a second. The honest window was the one that made the figure larger here, but it goes the other way just as often, and the point is that neither of us chose it. It was in the notes, in her words. [pause] That's what makes this figure hard to argue with. It isn't what inaction costs in the abstract. It's what their own decision process, running at their own stated pace, costs them while it runs. [pause] Sixty-nine thousand one hundred and sixty. That's the number — once I take the headcount growth back out, which I'm about to.","Sixty-nine thousand one hundred and sixty dollars. [pause] Smaller than most people in this room would like. Smaller than the two hundred and seventy-six thousand we passed on the way, and a great deal smaller than the version that gets produced in four minutes on a Thursday. [pause] It's also smaller than the draft I was handed, because I took the fifteen per cent headcount growth back out. The tool compounded it in — correctly, by its own instructions — and I removed it, and I'll say why in a moment. [pause] It is a number I could defend in front of anyone in their finance team, line by line. Walk the inputs back with me. Six hundred exceptions, Stated, fourteenth of August. Fourteen minutes, Stated, twenty-first, and he timed it. Thirty-eight dollars, Benchmarked, and I went and got it because the draft told me it had guessed. Sixty per cent, Assumed and agreed, quoted, and the quote is mine. Five months, Stated, hers. [pause] Five inputs, five sources, no gaps. If their CFO stops me on any line I've got an answer in under five seconds. [pause] That's the whole test. Not is it impressive. Can I answer for it. [pause] But a number on its own is an argument, and arguments wait. There's one more thing in this case, and it's the part that moves the deal.","First of March. [pause] Their ERP support contract auto-renews on the first of March with a nine per cent escalator. If nobody does anything, it locks for another twelve months at a higher price. Published — the date confirmed by them, the escalator in the contract they sent us. [pause] And it was sitting in line eleven of my notes doing nothing, because I hadn't asked myself whether anything dated fell inside the window. The tool asked, because the prompt told it to, and now it's in the model. That's the cheapest thing on this slide and it's the one you'll get most value from copying. [pause] Look what it does to the five months. It stops being a vague stretch of time and becomes a countdown with a specific day on the end. [pause] Here's the sentence. “On current pace this decision lands in about five months. That's roughly sixty-nine thousand dollars of recoverable cost while we wait, and it puts us past the first of March, after which the ERP contract locks for another year at nine per cent more.” [pause] No pressure tactics, no artificial deadline, nothing invented. Every part of it is theirs. [pause] The number gives them the reason. The date gives them the week. A number argues. A date decides. [pause] Go and look for the date in every deal you're carrying. It's usually already in your inbox, and now you know to ask for it.","Last thing in the segment, and don't skip it, because this is failure mode three. [pause] The fourth paragraph of the prompt asked for the recoverable figure as a share of what that team costs in total. Twelve coordinators, thirty-eight dollars loaded, two thousand and eighty hours each — about nine hundred and forty-eight thousand a year in team cost. Our figure is seventeen and a half per cent of it. [pause] That division is worth having and almost nobody does it, because you have to think to. Now it's free. [pause] What the tool said about it was “not implausible”, and I want to be blunt: that judgement is worth nothing. It has no idea what an ops team feels like. It doesn't know whether a sixth is a lot. It's pattern-matching against nothing in particular. [pause] So you do the part it can't. Say the fraction out loud, in the words you'd use in the room. “We're claiming this takes out about a sixth of what this team spends its time on.” [pause] Can you say that comfortably? Yes. A sixth is believable. It's roughly two of twelve people's worth of effort and anyone who runs an ops team can picture it. It sounds like an estimate rather than a vendor. [pause] If you'd flinched, the number's wrong, and you'd have caught it before they did. That flinch is not available to the tool. It is the entire reason you're in the loop. [pause] And now the headcount growth. Dana said ops headcount grows about fifteen per cent this year. The tool compounded it into the window and added roughly two thousand dollars, which is defensible arithmetic. I took it out. [pause] Not because it's wrong. Because I'd rather have a line in the document that says “we have excluded the fifteen per cent headcount growth she mentioned, which would raise this figure” than have two thousand extra dollars in it. [pause] Telling the customer what you left out buys more credibility than the two thousand would ever have added. Every time. It's the cheapest thing you will ever buy, and it's a decision, not a calculation — which is why it's yours.","Six minutes on the other version. [pause] What I'm about to show you is the same account and the same problem, produced in about four minutes by somebody under pressure. It's better formatted than mine. It's got rounder numbers and a bigger headline. [pause] It's pre-built, by the way — I'm not generating it live, because it is far too good at being convincing. [pause] I'm not going to tell you what's wrong with it. You are.","Here it is. Cost of inaction, four hundred and seventy-three thousand two hundred dollars a year. Seven hundred and fifty exceptions a week, fourteen minutes each, a hundred and seventy-five hours, fifty-two dollars an hour, times fifty-two weeks. [pause] I'm going to be quiet for ninety seconds so you can actually read it. Ninety seconds feels like a very long time on a webinar. I'm doing it anyway. [hold ninety seconds of silence] [pause] Right. What's wrong with it? Everything you've got, in the chat. [take answers in chat before revealing]","Good. Most of those are in here. Four things, and each one maps to a failure mode from earlier. [pause] One. The volume is unsourced. Seven hundred and fifty exceptions a week. The VP said six hundred. Nobody can tell you where seven hundred and fifty came from — not the model, not the person who ran it. That's failure mode one, the invented input. [pause] Two. The rate is unsourced. Fifty-two dollars an hour with no basis given at all. The benchmark supports thirty-eight fully loaded. That's a thirty-seven per cent overstatement sitting quietly inside an otherwise reasonable-looking model, and it's the one nobody questions, because hourly rates all look plausible. Failure mode one again. [pause] Three, and this is the big one. It reports spend, not recoverable value. Four hundred and seventy-three thousand is the entire current cost of handling exceptions. A company that buys absolutely nothing still handles exceptions. The cost of inaction is the recoverable portion over the decision window, not the whole line item. That's failure mode two, and the uncredited assumption is a hundred per cent recovery. Nobody would agree to that if you asked them. So it doesn't get asked. [pause] Four. It fails the plausibility check. Four hundred and seventy-three thousand is forty-nine point nine per cent of the ops team's entire fully loaded cost. It claims AI removes half of what twelve people do. [pause] Their CFO doesn't need to audit that. They simply stop believing the case.","Do the comparison. Four hundred and seventy-three thousand two hundred against sixty-nine thousand one hundred and sixty. The flawed figure is six point eight times larger. [pause] And it's worth nothing, because it doesn't survive the first question. Not the first meeting. The first question. [pause] Sixty-nine thousand dollars and a date closes deals that four hundred and seventy-three thousand does not. [pause] And notice it looked more professional than mine. Better formatting, rounder numbers, a bigger headline. Nothing about the document warns you. That's precisely what makes it dangerous, and it's the reason the discipline exists at all. [pause] Right. Your turn.","Fourteen minutes, and it's your deal now, not Meridian's. [pause] Same three moves you just watched. Paste your notes in raw. Run the prompt. Then work the right-hand column — what it flagged and what it left blank. [pause] Pick a stalled deal. Not your best one. The one that's gone quiet. [pause] I'll be in the chat throughout. Ask your sourcing questions publicly, because the answers are the content.","There it is, and it stays up for the whole exercise so nobody has to go hunting for it. [pause] Two things before you start. Don't tidy your notes — paste them as they are, typos and all. And when the model comes back, resist the urge to read the four boxes and feel pleased with yourself. Go straight to what it flagged. That's your homework and it's the reason we're doing this at all. [pause] Off you go.","Two minutes to pick the deal and paste the notes, one minute to run it, then the work. [pause] Source every input it filled, and actually read the quoted sentences rather than trusting that a sentence is there. Some of yours will turn out to be you proposing something and a customer not objecting. That's Assumed and agreed, relabel it, and it goes on your questions list. [pause] Then the plausibility fraction. Say it out loud, quietly, to yourself. If you flinch, something upstream is wrong and you've just caught it. [pause] And write down every blank. Questions in chat as they come up — I'll answer where everyone can see them. Off you go. [go quiet — stop talking and let them work] [post the “stuck?” prompt in chat at minute four, rather than waiting to be asked] [two-minute warning at minute ten]","A few of you are stuck in the same place, so here it is before anybody has to admit it. [pause] If the model came back looking impressively complete and you're not sure what's left to do — read the flags before the boxes. That reflex is the single thing I want you leaving with today. [pause] If you've found an input where the quoted sentence turns out to be you rather than them, good. That's the sixty-per-cent moment. Relabel it as Assumed and agreed and put it on the list. [pause] If there's no hourly rate in your notes — and there won't be, there almost never is — it will have reached for one. Go and get the real one. It's twenty seconds and it's the line everything else sits on. [pause] And if there's no dated event, go and look in the contract they already sent you. It's usually in there, and the tool can only find what you pasted. [pause] Two minutes left. Get your plausibility fraction said out loud.","Two volunteers, please, and unmuted rather than typed. [pause] I need the room to hear the hesitation before the answer, because that's the part that teaches. Typing gives you time to tidy it up, and tidying up is exactly the thing we're trying to catch. [pause] I'm not testing you. I'm showing everyone what the questioning sounds like, so you can do it to yourselves next week, in private, where it's cheap.","Right. First volunteer. Give me your number. Just the figure and the window — so many thousand over so many months. [pause] Good. Now the inputs, and I want the source category out loud for each one. Volume — where's that from? Stated by whom, and when? [pause] Effort. Same question. [pause] Loaded rate. Did the tool reach for that one, and did you go and replace it? Could you produce the benchmark today if their CFO asked? [pause] Recoverable share. This is the one. Is it assumed and agreed, or just assumed — and whose voice is the quoted sentence in? [pause, let them answer honestly — don't rescue them] [pause] The delay. Did they tell you that, or did the tool take your forecast date because that's what was in the notes? [pause] And last — what did it leave blank, and what did it flag? Read me the list. [pause] Thank you. Second volunteer, same questions. [take the second volunteer through the identical sequence] [pause] Same seven both times, and I pushed on the same one both times — the recoverable share. Not a coincidence. It's the softest input in almost every model, it's the one that gets quoted from your own mouth, and it fails at the finance review rather than in front of you. [pause] Seven questions, ninety seconds, and six of them you can now answer by reading rather than remembering, because you asked for the sentences. [pause] Show of hands, or say so in chat — who's got at least one blank? [pause] Good. That's most of you and it's the right answer. A blank is a question you now know to ask. The ones who worry me are the people with four full boxes and no flags at all, because that usually means the prompt got shortened.","One question to take away, and I'm going to let it sit rather than answer it for you. [pause] Which of your four inputs would you least like their CFO to ask about? [pause, don't fill the silence] [pause] You already know. You knew before I finished the sentence. There's one box you'd rather nobody pointed at, and the fact you can name it in two seconds tells you everything about whether it's sourced. [pause] That's the one to go and source this week. Not the whole model. One input. [pause] And notice that this is the question no tool can answer for you. It drafted the model, it did the arithmetic, it was honest about what it couldn't source and it worked out a ratio you'd never have calculated. It cannot tell you which number you're uncomfortable with, because discomfort is the thing you brought. [pause] A weak input you've found is a question you ask somebody on Thursday. A weak input you haven't found is a document that fails in a finance review after your champion has put their name on it. Same model, same gap. The only variable is whether you looked. [pause] Nobody looks for you. The people who read your figure don't know your deal and can't spot the invented input. They just get a feeling, and they don't fund feelings. [pause] So look. It takes about a minute.","Four categories, one last time, because in a week this is the bit that has to have stuck. Stated. Published. Benchmarked. Assumed and agreed. There is no fifth. [pause] And the shape of the hour, which is the other thing to keep: the tool builds the model and tells you where the holes are, in about a minute. You source it, you decide what to exclude, and you run the flinch test. That's twenty minutes, and it's the whole job. [pause] One commitment before you go. Take the figure into your next conversation on that deal — this week, not next month. Say the source of each input out loud as you go and watch what it does to the room. [pause] Then pick one flagged blank and go and get it. One question, to one person. [pause] You're leaving with a number for one deal and a short list of things you didn't know you didn't know. That's more than most people have.","That's the hour. Use it this week, while the sourcing is still fresh in your head — a cost-of-inaction figure ages badly, and in a fortnight you won't remember which meeting the fourteen minutes came from. [pause] I'll keep the room open for five minutes past the hour. [stop the recording, then stay] The best questions always turn up after the recording stops, so if yours is one of those, hang about. [pause] Thanks for your time."], META=[{"seg":0,"t":45},{"seg":0,"t":75},{"seg":0,"t":105},{"seg":0,"t":75},{"seg":1,"t":40},{"seg":1,"t":105},{"seg":1,"t":115},{"seg":1,"t":105},{"seg":1,"t":115},{"seg":2,"t":30},{"seg":2,"t":50},{"seg":2,"t":50},{"seg":2,"t":45},{"seg":2,"t":65},{"seg":3,"t":35},{"seg":3,"t":55},{"seg":3,"t":65},{"seg":3,"t":80},{"seg":3,"t":90},{"seg":3,"t":45},{"seg":3,"t":45},{"seg":3,"t":45},{"seg":3,"t":55},{"seg":3,"t":40},{"seg":3,"t":55},{"seg":3,"t":95},{"seg":3,"t":70},{"seg":3,"t":125},{"seg":4,"t":40},{"seg":4,"t":130},{"seg":4,"t":130},{"seg":4,"t":60},{"seg":5,"t":35},{"seg":5,"t":50},{"seg":5,"t":655},{"seg":5,"t":100},{"seg":6,"t":40},{"seg":6,"t":190},{"seg":6,"t":130},{"seg":7,"t":75},{"seg":7,"t":45}], SEGS=[{"n":0,"t":"The competitor you are actually losing to","m":5,"from":0,"to":5},{"n":1,"t":"Why cost-of-inaction figures fail","m":8,"from":5,"to":13},{"n":2,"t":"The four-part model","m":4,"from":13,"to":17},{"n":3,"t":"Worked example — Meridian Logistics","m":15,"from":17,"to":32},{"n":4,"t":"Spot the flaw","m":6,"from":32,"to":38},{"n":5,"t":"Guided practice — your own opportunity","m":14,"from":38,"to":52},{"n":6,"t":"Debrief","m":6,"from":52,"to":58},{"n":7,"t":"Close","m":2,"from":58,"to":60}];
+  var slides=[].slice.call(document.querySelectorAll('.slide')), n=slides.length, cur=0;
+  var t0=null, paused=0, pausedAt=null;
+
+  /* cumulative planned seconds at the START of each slide */
+  var planned=[], run=0;
+  META.forEach(function(m){ planned.push(run); run+=m.t; });
+
+  function fit(){
+    var d=document.getElementById('deck'), st=document.getElementById('stage');
+    var aw=st.clientWidth-40, ah=st.clientHeight-40;
+    var s=Math.min(aw/1280, ah/720);
+    d.style.transform='scale('+s+')';
+  }
+  window.addEventListener('resize',fit);
+
+  function show(i){
+    if(i<0||i>=n) return;
+    slides[cur].classList.remove('on');
+    cur=i; slides[cur].classList.add('on');
+    document.getElementById('pos').textContent=(i+1)+' / '+n;
+    document.getElementById('prog').style.width=((i+1)/n*100)+'%';
+    document.getElementById('ntext').textContent=NOTES[i]||'';
+    var nx=NOTES[i+1]? 'Next: '+NOTES[i+1].slice(0,150)+(NOTES[i+1].length>150?'…':'') : 'Last slide.';
+    document.getElementById('nnext').textContent=nx;
+    var sg=SEGS[META[i].seg];
+    document.getElementById('segnow').textContent='S'+sg.n+' · '+sg.t+'  ('+sg.from+'–'+sg.to+' min)';
+    // shrink very long answer numbers
+    var big=slides[cur].querySelector('.big');
+    if(big) big.classList.toggle('sm', big.textContent.length>16);
+    tick();
+  }
+  function pad(x){return (x<10?'0':'')+x}
+  function elapsed(){
+    if(t0===null) return 0;
+    var end = pausedAt!==null ? pausedAt : Date.now();
+    return Math.floor((end-t0-paused)/1000);
+  }
+  function tick(){
+    var e=elapsed();
+    document.getElementById('clock').textContent=pad(Math.floor(e/60))+':'+pad(e%60);
+    var p=document.getElementById('pace');
+    if(t0===null){ p.textContent='Not started'; p.className=''; return; }
+    var d=e-planned[cur], m=Math.round(Math.abs(d)/60);
+    if(Math.abs(d)<=120){ p.textContent='On time'; p.className='ok'; }
+    else if(d>0){ p.textContent=m+' min behind'; p.className='behind'; }
+    else { p.textContent=m+' min ahead'; p.className='ahead'; }
+  }
+  setInterval(tick,1000);
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){ e.preventDefault(); show(cur+1); }
+    else if(k==='ArrowLeft'||k==='PageUp'){ e.preventDefault(); show(cur-1); }
+    else if(k==='Home'){ show(0); } else if(k==='End'){ show(n-1); }
+    else if(k==='n'||k==='N'){ toggleNotes(); }
+    else if(k==='s'||k==='S'){ startPause(); }
+    else if(k==='f'||k==='F'){ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }
+    else if(k==='?'){ document.getElementById('help').classList.toggle('on'); }
+    else if(k==='Escape'){ document.getElementById('help').classList.remove('on'); }
+  });
+  document.getElementById('deck').addEventListener('click',function(){ show(cur+1); });
+
+  function toggleNotes(){
+    document.getElementById('notes').classList.toggle('on');
+    document.body.classList.toggle('notes');
+    setTimeout(fit,10);
+  }
+  function startPause(){
+    var b=document.getElementById('bstart');
+    if(t0===null){ t0=Date.now(); b.textContent='Pause'; }
+    else if(pausedAt===null){ pausedAt=Date.now(); b.textContent='Resume'; }
+    else { paused+=Date.now()-pausedAt; pausedAt=null; b.textContent='Pause'; }
+    tick();
+  }
+  document.getElementById('bstart').addEventListener('click',startPause);
+  document.getElementById('breset').addEventListener('click',function(){
+    t0=null;paused=0;pausedAt=null;document.getElementById('bstart').textContent='Start';tick();});
+  document.getElementById('bnotes').addEventListener('click',toggleNotes);
+  document.getElementById('bhelp').addEventListener('click',function(){document.getElementById('help').classList.toggle('on')});
+  document.getElementById('help').addEventListener('click',function(){this.classList.remove('on')});
+
+  fit(); show(0);
+})();
+</script>
+</body>
+</html>
